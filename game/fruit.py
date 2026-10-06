@@ -17,8 +17,8 @@ class Fruit:
     def update(self):
         self.y += self.speed
 
-    def is_missed(self, screen_height):
-        return self.y > screen_height
+    def is_missed(self, ground_y):
+        return self.y + self.radius >= ground_y
 
     @property
     def rect(self):

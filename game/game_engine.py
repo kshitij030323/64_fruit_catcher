@@ -6,6 +6,8 @@ class GameEngine:
     def __init__(self, width, height):
         self.width = width
         self.height = height
+        self.ground_height = 25
+        self.ground_y = height - self.ground_height
         self.basket = Basket(width, height)
         self.fruits = []
 
@@ -42,17 +44,18 @@ class GameEngine:
         for fruit in self.fruits[:]:
             fruit.update()
 
-            if basket_rect.colliderect(fruit.rect):
-
+            if basket_rect.colliderect(fruit.rect) and basket_rect.left <= fruit.x <= basket_rect.right:
                 self.score += 1
-
-
                 self.fruits.remove(fruit)
                 continue
 
-            if fruit.is_missed(self.height):
-                self.score += 1
+            if fruit.is_missed(self.ground_y):
+                self.lives -= 1
                 self.fruits.remove(fruit)
+                if self.lives <= 0:
+                    self.lives = 0
+                    self.game_state = "GAME_OVER"
+                    break
 
     def reset(self):
         self.basket = Basket(self.width, self.height)
@@ -65,8 +68,7 @@ class GameEngine:
     def render(self, screen):
         screen.fill((28, 32, 40))
 
-        ground_y = self.height - 25
-        pygame.draw.rect(screen, (45, 50, 60), (0, ground_y, self.width, 25))
+        pygame.draw.rect(screen, (45, 50, 60), (0, self.ground_y, self.width, self.ground_height))
 
         self.basket.render(screen)
         for fruit in self.fruits:
